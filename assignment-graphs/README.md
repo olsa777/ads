@@ -83,18 +83,20 @@ The graph is represented internally using an Adjacency List. This is implemented
 ### Execution Time Comparison Table
 
 The table below displays the execution times recorded during the experiments across different graph sizes using `System.nanoTime()`:
+Small (10 vertices):
 
-| Graph Size (Vertices) | BFS Execution Time (ns) | DFS Execution Time (ns) |
-| --- | --- | --- |
-| 10 vertices 
+BFS Execution Time: 45,200 ns
+DFS Execution Time: 38,100 ns
 
- | 45,200 | 38,100 |
-| 30 vertices 
+Medium (30 vertices):
 
- | 125,400 | 98,600 |
-| 100 vertices 
+BFS Execution Time: 125,400 ns
+DFS Execution Time: 98,600 ns
 
- | 412,900 | 345,200 |
+Large (100 vertices):
+
+BFS Execution Time: 412,900 ns
+DFS Execution Time: 345,200 ns
 
 ### Analysis Questions & Observations
 
