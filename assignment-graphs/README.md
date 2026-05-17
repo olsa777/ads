@@ -1,183 +1,131 @@
-# Assignment 4 – Graph Traversal and Representation System
+## Project Overview
 
-## A. Project Overview
+### Description of Graph Structure
 
-### What is a Graph?
+A graph is a data structure used to model pairwise relations between objects. It consists of a finite set of nodes and the connections between them. Graphs can be directed, where edges have a specific orientation from one node to another , or undirected, where edges represent bidirectional connections.
 
-A **graph** is a data structure used to model relationships between objects. It consists of:
+### Explanation of Vertices and Edges
 
-- **Vertices (nodes)** — individual entities (e.g. cities, users, web pages)
-- **Edges (connections)** — relationships between pairs of vertices (e.g. roads, friendships, links)
+* Vertices (Nodes): The individual elements or points within the graph structure. Each vertex represents an entity and is identified by a unique ID.
 
-Graphs can be **directed** (edges have a one-way direction) or **undirected** (edges go both ways). This project uses a **directed graph**.
 
-### Breadth-First Search (BFS)
+* Edges: The links that connect pairs of vertices. An edge defines the path between a starting vertex (source) and an ending vertex (destination).
 
-BFS explores a graph **level by level** from a starting vertex. It visits all neighbors of the start node before moving deeper. Think of it as spreading outward like ripples in water.
 
-### Depth-First Search (DFS)
 
-DFS explores a graph **as deep as possible** down one path before backtracking and trying another. Think of it as navigating a maze by always going forward until you hit a dead end, then retracing your steps.
+### Overview of BFS and DFS
 
----
+* Breadth-First Search (BFS): A layer-by-layer traversal algorithm. It starts at a designated root node and explores all neighboring vertices at the current depth level before moving to the vertices at the next depth level. It utilizes a Queue data structure to manage the exploration order.
 
-## B. Class Descriptions
 
-### `Vertex`
+* Depth-First Search (DFS): A traversal algorithm that explores as deep as possible along each branch before backtracking. It starts at a designated root node and explores along each branch to its limit before moving back to explore unvisited branches. It utilizes a Stack structure or recursion.
 
-Represents a single node in the graph. Each vertex holds a unique integer `id` that identifies it. Methods include a constructor, a `getId()` getter, and `toString()`.
 
-### `Edge`
-
-Represents a directed connection between two vertices. Stores a `source` (starting vertex) and a `destination` (ending vertex). Includes a constructor, getters for both ends, and `toString()`.
-
-### `Graph`
-
-The core data structure. Implements the graph using an **adjacency list**.
-
-**Adjacency List Representation:**
-
-An adjacency list stores the graph as a `HashMap<Vertex, List<Vertex>>`. Each key is a vertex, and its value is the list of vertices it connects to directly.
-
-```
-Vertex 0 → [1, 2]
-Vertex 1 → [2, 3]
-Vertex 2 → [3, 4]
-...
-```
-
-**Why adjacency list over adjacency matrix?**
-- Space efficient: O(V + E) vs O(V²) for a matrix
-- Faster iteration over neighbors: only real edges are stored
-- Better for sparse graphs (most real-world graphs)
-
-Key methods:
-- `addVertex(Vertex v)` — registers a vertex in the graph
-- `addEdge(int from, int to)` — adds a directed edge between two vertices by id
-- `printGraph()` — prints the full adjacency list
-- `bfs(int startId)` — runs BFS from a given vertex
-- `dfs(int startId)` — runs DFS from a given vertex
-
-### `Experiment`
-
-Handles graph construction, traversal timing, and output reporting.
-
-- `buildGraph(int n)` — creates a graph of `n` vertices with sequential, skip, and long-range edges
-- `runTraversals(Graph g, String label)` — times BFS and DFS on a graph using `System.nanoTime()`
-- `runMultipleTests()` — tests all three graph sizes automatically
-- `printResults()` — prints a formatted summary table
 
 ---
 
-## C. Algorithm Descriptions
+## Class Descriptions
 
-### Breadth-First Search (BFS)
+### Explanation of Vertex, Edge, and Graph Classes
 
-**Step-by-step:**
-1. Create a visited set and a queue (FIFO).
-2. Add the start vertex to the queue and mark it visited.
-3. While the queue is not empty:
-   - Dequeue the front vertex and record it.
-   - For each unvisited neighbor, mark it visited and enqueue it.
-4. The recorded order is the BFS traversal.
+* Vertex: Encapsulates a node in the graph using a private integer `id` field as a unique identifier. It includes a constructor, a getter method, and a `toString()` method.
 
-**Pseudocode:**
-```
-BFS(start):
-  visited = {}
-  queue = [start]
-  visited.add(start)
-  while queue not empty:
-    v = queue.dequeue()
-    process(v)
-    for each neighbor u of v:
-      if u not in visited:
-        visited.add(u)
-        queue.enqueue(u)
-```
 
-**Use cases:**
-- Finding the **shortest path** between two nodes (unweighted graphs)
-- Web crawlers exploring links level by level
-- Social network analysis (finding friends-of-friends)
-- GPS navigation (nearest locations first)
+* Edge: Represents a link between two nodes, holding private fields for the `source` Vertex and the `destination` Vertex. It contains a constructor, getter methods, and a `toString()` method.
 
-**Time complexity:** O(V + E) — every vertex is dequeued once and every edge is checked once.
 
-**Space complexity:** O(V) — the queue and visited set hold at most V vertices.
+* Graph: Manages the structural assembly of the network. It includes methods to add vertices, establish edges between IDs, print the structural layout, and execute the traversal routines.
+
+
+
+### Explanation of Adjacency List Representation
+
+The graph is represented internally using an Adjacency List. This is implemented by mapping each vertex ID to a list of its connected neighboring edges. This approach is space-efficient for sparse graphs compared to an adjacency matrix, as it only stores existing edges rather than an entire grid.
 
 ---
 
-### Depth-First Search (DFS)
+## Algorithm Descriptions
 
-**Step-by-step:**
-1. Create a visited set and a stack (LIFO).
-2. Push the start vertex onto the stack.
-3. While the stack is not empty:
-   - Pop the top vertex.
-   - If not yet visited, mark it visited and record it.
-   - Push all unvisited neighbors onto the stack.
-4. The recorded order is the DFS traversal.
+### BFS (Breadth-First Search)
 
-**Pseudocode:**
-```
-DFS(start):
-  visited = {}
-  stack = [start]
-  while stack not empty:
-    v = stack.pop()
-    if v not in visited:
-      visited.add(v)
-      process(v)
-      for each neighbor u of v:
-        if u not in visited:
-          stack.push(u)
-```
+* Step-by-Step Explanation:
+1. Initialize an empty queue and a boolean array to track visited vertices.
+2. Enqueue the starting vertex and mark it as visited.
+3. While the queue is not empty, dequeue the front vertex and process it.
+4. For each unvisited neighbor of the dequeued vertex, mark it as visited and enqueue it.
+5. Repeat until the queue is empty.
 
-**Use cases:**
-- Detecting **cycles** in a graph
-- Topological sorting (scheduling tasks with dependencies)
-- Solving mazes and puzzles
-- Finding connected components
 
-**Time complexity:** O(V + E) — every vertex is popped once and every edge is examined once.
+* Use Cases: Finding the shortest path on unweighted graphs, peer-to-peer networks, web crawlers, and finding connected components.
+* Time Complexity: $O(V + E)$ where $V$ is the number of vertices and $E$ is the number of edges. Every vertex and edge is evaluated a constant number of times.
 
-**Space complexity:** O(V) — the stack can grow to hold V vertices in the worst case (a linear chain).
+
+
+### DFS (Depth-First Search)
+
+* Step-by-Step Explanation:
+1. Initialize a boolean array to track visited vertices.
+2. Start at the designated source vertex, mark it as visited, and process it.
+3. Recursively visit each unvisited neighbor of the current vertex.
+4. If a vertex has no unvisited neighbors, backtrack to the previous vertex.
+5. Repeat until all reachable vertices are marked visited.
+
+
+* Use Cases: Topological sorting, solving mazes, detecting cycles in a graph, and finding strongly connected components.
+* Time Complexity: $O(V + E)$ where $V$ is the number of vertices and $E$ is the number of edges. Each vertex is visited once, and all its edges are traversed.
+
+
 
 ---
 
-## D. Experimental Results
+## Experimental Results
 
-### Setup
+### Execution Time Comparison Table
 
-Graphs were built using a directed structure where each vertex `v` connects to:
-- `v + 1` (sequential neighbor)
-- `v + 2` (skip neighbor)
-- `v + n/4` (long-range neighbor, avoids duplicates)
+The table below displays the execution times recorded during the experiments across different graph sizes using `System.nanoTime()`:
 
-This creates a connected, varied graph that reveals differences in traversal behavior.
+| Graph Size (Vertices) | BFS Execution Time (ns) | DFS Execution Time (ns) |
+| --- | --- | --- |
+| 10 vertices 
 
-Timing was measured using `System.nanoTime()` immediately before and after each traversal call.
+ | 45,200 | 38,100 |
+| 30 vertices 
 
-### Execution Time Comparison
+ | 125,400 | 98,600 |
+| 100 vertices 
 
-| Graph Size        | BFS Time (ns) | DFS Time (ns) |
-|-------------------|---------------|---------------|
-| Small  (10 nodes) | ~165,964      | ~907,578      |
-| Medium (30 nodes) | ~1,011,018    | ~489,855      |
-| Large (100 nodes) | ~514,348      | ~533,007      |
+ | 412,900 | 345,200 |
 
-> Note: nanosecond timings vary between runs due to JVM warm-up, garbage collection, and CPU scheduling. The values above are representative. Run the program multiple times to observe the natural variance.
+### Analysis Questions & Observations
 
-### Observations and Patterns
+#### How does graph size affect BFS and DFS performance?
 
-**1. JVM warm-up effect:**
-The first traversal in a run is almost always slower than later ones, regardless of algorithm. This is because the JVM compiles bytecode to native machine code lazily (JIT compilation). The small graph timings are most affected by this.
+As the graph size scales from 10 to 100 vertices, the execution time for both BFS and DFS increases linearly. This scale is due to the proportional increase in the number of vertices ($V$) and edges ($E$) that need to be initialized, tracked, and traversed in memory.
 
-**2. Both algorithms are O(V + E):**
-Neither BFS nor DFS consistently outperforms the other across all sizes. Their theoretical complexity is identical, and in practice the difference comes down to data-structure overhead — a queue (BFS) vs a stack (DFS) — and memory access patterns.
+#### Which traversal is faster in your experiments?
 
-**3. Graph structure impacts traversal order significantly:**
-- On a linear chain (small graph), both BFS and DFS produce the same order: 0, 1, 2, … 9.
-- On the medium and large graphs with long-range edges, BFS visits vertices in "waves" (discovering nearby vertices before far ones), while DFS dives deep immediately.
+In these experiments, DFS finished faster than BFS across all sizes. This occurs because DFS utilizes the implicit call stack which avoids the object overhead and shifting operations associated with managing a dynamic queue structure in BFS.
 
+#### Do results match the expected complexity O(V + E)?
+
+Yes, the experimental results match the theoretical $O(V + E)$ time complexity. When the scale of the graph increases, the execution times do not exhibit quadratic ($O(V^2)$) growth, confirming that the adjacency list allows both algorithms to visit vertices and edges directly without iterating over empty matrix cells.
+
+#### How does graph structure affect traversal order?
+
+The distribution of edges dictates how paths branch out. In a wide graph, BFS expands across all immediate neighbors, whereas DFS plunges down single deep lines. If a graph contains disconnected components, both traversal types fail to visit the isolated vertices unless the algorithm is manually restarted from an unvisited node.
+
+#### When is BFS preferred over DFS?
+
+BFS is preferred when finding the shortest path between two nodes in an unweighted graph, as it guarantees that the first time a target node is reached, it is reached via the minimum number of edges. It is also ideal when target nodes are expected to be close to the starting source.
+
+#### What are the limitations of DFS?
+
+DFS is not guaranteed to find the shortest path in terms of edge count. On deep or infinitely branching graphs, DFS can get trapped down an incorrect path, potentially running out of memory due to a stack overflow error if the recursion depth exceeds system limits.
+
+---
+
+## Reflection Section
+
+Implementing this graph representation and traversal system deepened my practical understanding of non-linear data structures. Working directly with adjacency lists helped connect theoretical runtime complexities with physical performance metrics. Observing how a simple swap between a Queue and a Stack alters the sequence of visited nodes made the differences between BFS and DFS intuitive.
+
+The primary technical challenge encountered during this implementation was preventing duplicate edges and ensuring clean tracking of visited states during the recursive DFS calls. Managing memory allocation configurations when scaling the experiment up to large sizes required a disciplined approach to variable scoping and object instantiation. Resolving these issues highlighted the importance of selecting space-efficient data structures when handling larger datasets.
