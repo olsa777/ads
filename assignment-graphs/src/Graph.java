@@ -1,113 +1,66 @@
 import java.util.*;
-public class Graph {
-    private Map<Vertex, List<Vertex>> adjacencyList;
-    private Map<Integer, Vertex> vertexMap;
-    public Graph() {
-        adjacencyList = new HashMap<>();
-        vertexMap     = new HashMap<>();
-    }
-    public void addVertex(Vertex v) {
-        if (!adjacencyList.containsKey(v)) {
-            adjacencyList.put(v, new ArrayList<>());
-            vertexMap.put(v.getId(), v);
-        }
-    }
-    public void addEdge(int from, int to) {
-        Vertex source = vertexMap.get(from);
-        Vertex dest   = vertexMap.get(to);
 
-        if (source == null || dest == null) {
-            System.out.println("Warning: vertex " + from + " or " + to + " not found.");
-            return;
-        }
+public class Experiment {
 
-        // Avoid duplicate edges
-        if (!adjacencyList.get(source).contains(dest)) {
-            adjacencyList.get(source).add(dest);
-        }
-    }
-    public Vertex getVertex(int id) {
-        return vertexMap.get(id);
-    }
-    public int vertexCount() {
-        return adjacencyList.size();
-    }
-    public void printGraph() {
-        System.out.println("Graph Adjacency List (" + adjacencyList.size() + " vertices):");
-        // Sort by vertex id for consistent, readable output
-        List<Vertex> sorted = new ArrayList<>(adjacencyList.keySet());
-        sorted.sort(Comparator.comparingInt(Vertex::getId));
+    private List<String[]> results = new ArrayList<>();
 
-        for (Vertex v : sorted) {
-            System.out.print("  " + v.getId() + " -> ");
-            List<Vertex> neighbors = adjacencyList.get(v);
-            if (neighbors.isEmpty()) {
-                System.out.print("(no edges)");
-            } else {
-                StringBuilder sb = new StringBuilder();
-                for (Vertex neighbor : neighbors) {
-                    sb.append(neighbor.getId()).append(" ");
-                }
-                System.out.print(sb.toString().trim());
-            }
-            System.out.println();
+    public void runTraversals(Graph g, String label) {
+        System.out.println("\n--- " + label + " ---");
+
+        long bfsStart = System.nanoTime();
+        g.bfs(0);
+        long bfsEnd  = System.nanoTime();
+        long bfsTime = bfsEnd - bfsStart;
+
+        long dfsStart = System.nanoTime();
+        g.dfs(0);
+        long dfsEnd  = System.nanoTime();
+        long dfsTime = dfsEnd - dfsStart;
+
+        System.out.println("BFS time: " + bfsTime + " ns");
+        System.out.println("DFS time: " + dfsTime + " ns");
+
+        results.add(new String[]{label, String.valueOf(bfsTime), String.valueOf(dfsTime)});
+    }
+
+    public void runMultipleTests() {
+        int[] sizes = {10, 30, 100};
+        String[] labels = {
+            "Small  (10 vertices)",
+            "Medium (30 vertices)",
+            "Large (100 vertices)"
+        };
+
+        for (int i = 0; i < sizes.length; i++) {
+            int   n = sizes[i];
+            Graph g = buildGraph(n);
+            runTraversals(g, labels[i]);
         }
     }
-    public void bfs(int startId) {
-        Vertex start = vertexMap.get(startId);
-        if (start == null) {
-            System.out.println("BFS: start vertex " + startId + " not found.");
-            return;
+
+    public Graph buildGraph(int n) {
+        Graph g = new Graph();
+
+        for (int i = 0; i < n; i++) {
+            g.addVertex(new Vertex(i));
         }
 
-        Set<Vertex>   visited = new HashSet<>();
-        Queue<Vertex> queue   = new LinkedList<>();
-        List<Integer> order   = new ArrayList<>();
-
-        queue.add(start);
-        visited.add(start);
-
-        while (!queue.isEmpty()) {
-            Vertex current = queue.poll();
-            order.add(current.getId());
-            for (Vertex neighbor : adjacencyList.get(current)) {
-                if (!visited.contains(neighbor)) {
-                    visited.add(neighbor);
-                    queue.add(neighbor);
-                }
-            }
+        for (int i = 0; i < n; i++) {
+            if (i + 1 < n)     g.addEdge(i, i + 1);
+            if (i + 2 < n)     g.addEdge(i, i + 2);
+            if (i + n / 4 < n) g.addEdge(i, i + n / 4);
         }
 
-        System.out.println("BFS from " + startId + ": " + order);
+        return g;
     }
-    public void dfs(int startId) {
-        Vertex start = vertexMap.get(startId);
-        if (start == null) {
-            System.out.println("DFS: start vertex " + startId + " not found.");
-            return;
+
+    public void printResults() {
+        System.out.println("\n╔══════════════════════════╦══════════════════╦══════════════════╗");
+        System.out.println("║ Graph Size               ║ BFS Time (ns)    ║ DFS Time (ns)    ║");
+        System.out.println("╠══════════════════════════╬══════════════════╬══════════════════╣");
+        for (String[] row : results) {
+            System.out.printf("║ %-24s ║ %16s ║ %16s ║%n", row[0], row[1], row[2]);
         }
-
-        Set<Vertex>   visited = new HashSet<>();
-        Deque<Vertex> stack   = new ArrayDeque<>();
-        List<Integer> order   = new ArrayList<>();
-        stack.push(start);
-
-        while (!stack.isEmpty()) {
-            Vertex current = stack.pop();
-
-            if (!visited.contains(current)) {
-                visited.add(current);
-                order.add(current.getId());
-                List<Vertex> neighbors = new ArrayList<>(adjacencyList.get(current));
-                Collections.reverse(neighbors);
-                for (Vertex neighbor : neighbors) {
-                    if (!visited.contains(neighbor)) {
-                        stack.push(neighbor);
-                    }
-                }
-            }
-        }
-
-        System.out.println("DFS from " + startId + ": " + order);
+        System.out.println("╚══════════════════════════╩══════════════════╩══════════════════╝");
     }
 }
