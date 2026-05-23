@@ -1,12 +1,17 @@
 import java.util.*;
+
 public class Experiment {
+
     private List<String[]> results = new ArrayList<>();
+
     public void runTraversals(Graph g, String label) {
         System.out.println("\n--- " + label + " ---");
+
         long bfsStart = System.nanoTime();
         g.bfs(0);
         long bfsEnd  = System.nanoTime();
         long bfsTime = bfsEnd - bfsStart;
+
         long dfsStart = System.nanoTime();
         g.dfs(0);
         long dfsEnd  = System.nanoTime();
@@ -17,6 +22,7 @@ public class Experiment {
 
         results.add(new String[]{label, String.valueOf(bfsTime), String.valueOf(dfsTime)});
     }
+
     public void runMultipleTests() {
         int[] sizes = {10, 30, 100};
         String[] labels = {
@@ -31,15 +37,18 @@ public class Experiment {
             runTraversals(g, labels[i]);
         }
     }
+
     public Graph buildGraph(int n) {
         Graph g = new Graph();
+
         for (int i = 0; i < n; i++) {
             g.addVertex(new Vertex(i));
         }
+
         for (int i = 0; i < n; i++) {
-            if (i + 1 < n)     g.addEdge(i, i + 1);      // sequential neighbor
-            if (i + 2 < n)     g.addEdge(i, i + 2);      // skip neighbor
-            if (i + n / 4 < n) g.addEdge(i, i + n / 4);  // long-range neighbor
+            if (i + 1 < n)     g.addEdge(i, i + 1);
+            if (i + 2 < n)     g.addEdge(i, i + 2);
+            if (i + n / 4 < n) g.addEdge(i, i + n / 4);
         }
 
         return g;
